@@ -75,4 +75,4 @@ class MemoryContainer {
   //#endregion
 }
 
-export { MemoryContainer };
+export default MemoryContainer;
