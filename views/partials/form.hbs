@@ -1,0 +1,21 @@
+<div>
+    <a href="/productos" class="btn btn-primary rounded mb-4 mll-4 px-3 py-2"> Ver Productos </a>
+</div>
+<form id="form" class="rounded-lg0" method="POST" action="/productos">
+    <h4 class="text-primary m-4">Ingrese un producto:</h4>
+    <div class="form-group m-4">
+        <label for="title" class="font-weight-bold">Título:</label>
+        <input type="text" class="form-control" name="title" id="title" required>
+    </div>
+    <div class="form-group m-4">
+        <label for="price" class="font-weight-bold">Precio:</label>
+        <input type="text" class="form-control" name="price" id="price" required>
+    </div>
+    <div class="form-group m-4">
+        <label for="thumbnail" class="font-weight-bold">URL de la imagen:</label>
+        <input type="text" class="form-control" name="thumbnail" id="thumbnail" required>
+    </div>
+    <div class="form-group m-4">
+        <input type="submit" class="btn btn-primary rounded mb-4 mll-4 px-3 py-2" value="Enviar">
+    </div>
+</form>
