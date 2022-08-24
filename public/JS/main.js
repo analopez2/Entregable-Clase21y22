@@ -1,28 +1,55 @@
+import { denormalizeObject } from '../../src/utils/schema-normalizr.js';
+
 const socket = io.connect();
 
 function enviarMensaje() {
   const email = document.getElementById('email');
   const mensaje = document.getElementById('mensaje');
+  const nombre = document.getElementById('nombre');
+  const apellido = document.getElementById('apellido');
+  const alias = document.getElementById('alias');
+  const edad = document.getElementById('edad');
+  const avatar = document.getElementById('avatar');
 
-  if (!email.value || !mensaje.value) {
-    alert('Debe completar los campos');
+  if (
+    !email.value ||
+    !mensaje.value ||
+    !nombre.value ||
+    !apellido.value ||
+    !alias.value ||
+    !edad.value ||
+    !avatar.value
+  ) {
+    alert('Debe completar todos los campos');
     return false;
   }
 
-  socket.emit('mensajeNuevo', { email: email.value, text: mensaje.value });
+  socket.emit('mensajeNuevo', {
+    author: {
+      email: email.value,
+      nombre: nombre.value,
+      apellido: apellido.value,
+      edad: edad.value,
+      alias: alias.value,
+      avatar: avatar.value,
+    },
+    text: mensaje.value,
+  });
   mensaje.value = '';
   return false;
 }
 
 socket.on('mensajes', (mensajes) => {
-  let mensajesHtml = mensajes
+  let denormalizeMsjObject = denormalizeObject(mensajes);
+
+  let mensajesHtml = denormalizeMsjObject
     .map(
       (mensaje) =>
         `<div>
         <b style="color:blue;">${mensaje.email}</b>
         [<span style="color:brown;">${mensaje.timestamp}</span>] :
         <i style="color:green;">${mensaje.text}</i>
-        </div>`
+        </div>`,
     )
     .join('<br>');
 

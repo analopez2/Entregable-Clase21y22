@@ -22,6 +22,8 @@ const config = {
   server: {
     PORT: process.env.PORT || DEV_PORT,
   },
+  selectedDB: process.env.TIPO_DB,
+  UrlMongoDB: process.env.URL,
 };
 
 export { config };
