@@ -2,20 +2,13 @@ import express from 'express';
 import { Server as HttpServer } from 'http';
 import { Server as IOServer } from 'socket.io';
 import { DATE_UTILS } from './utils/index.js';
-import { DbContainer } from './contenedores/DbContainer.js';
-import { MensajesDaoMongoDb } from './daos/mensajes/MensajesDaoMongoDb.js';
+import { DbContainer } from './Api/DbContainer.js';
 import { KnexService } from './services/index.js';
 import { productRouter } from './routers/productRouter.js';
 import ProductsFaker from './models/ProductsFaker.js';
 import handlebars from 'express-handlebars';
-import { fileURLToPath } from 'url';
-import { normalizedObject } from './utils/schema-normalizr.js';
-import path from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const MessagesApi = new MensajesDaoMongoDb();
+const MessagesApi = new DbContainer(KnexService.KnexSqlite, 'mensajes');
 const ProductsApi = new DbContainer(KnexService.KnexMySQL, 'productos');
 
 const app = express();
@@ -29,8 +22,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/productos', productRouter);
 
-app.engine('hbs', handlebars.engine());
-app.set('views', path.join(__dirname, '../public/views'));
+app.engine(
+  'hbs',
+  handlebars.engine({
+    extname: '.hbs',
+    defaultLayout: 'products.hbs',
+    layoutsDir: './views/',
+  }),
+);
+
+app.set('views', './views');
 app.set('view engine', 'hbs');
 
 const productsFaker = new ProductsFaker();
@@ -52,25 +53,13 @@ app.get('/api/productos-test', async (req, res) => {
   }
 });
 
-const originalMsj = {
-  id: 'mensajes',
-  mensajes: [],
-};
-
 io.on('connection', async (socket) => {
   console.log(`Nuevo cliente conectado ${socket.id}`);
-  originalMsj.mensajes = await MessagesApi.getAll();
 
-  const normalizedMsjObject = normalizedObject(originalMsj);
+  socket.emit('mensajes', await MessagesApi.getAll());
 
-  const size_original = JSON.stringify(originalMsj).length;
-  const size_normalized = JSON.stringify(normalizedMsjObject).length;
-  const percentaje = (size_normalized * 100) / size_original;
-
-  socket.emit('mensajes', normalizedMsjObject, Math.round(percentaje));
-
-  socket.on('mensajeNuevo', async (message) => {
-    message.timestamp = DATE_UTILS.getTimestamp();
+  socket.on('mensajeNuevo', async ({ email, text }) => {
+    const message = { email, text, timestamp: DATE_UTILS.getTimestamp() };
     await MessagesApi.save(message);
 
     io.sockets.emit('mensajes', await MessagesApi.getAll());
