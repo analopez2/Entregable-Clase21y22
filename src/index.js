@@ -7,6 +7,11 @@ import { KnexService } from './services/index.js';
 import { productRouter } from './routers/productRouter.js';
 import ProductsFaker from './models/ProductsFaker.js';
 import handlebars from 'express-handlebars';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const MessagesApi = new DbContainer(KnexService.KnexSqlite, 'mensajes');
 const ProductsApi = new DbContainer(KnexService.KnexMySQL, 'productos');
@@ -22,16 +27,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/productos', productRouter);
 
-app.engine(
-  'hbs',
-  handlebars.engine({
-    extname: '.hbs',
-    defaultLayout: 'products.hbs',
-    layoutsDir: './views/',
-  }),
-);
-
-app.set('views', './views');
+app.engine('hbs', handlebars.engine());
+app.set('views', path.join(__dirname, '../public/views'));
 app.set('view engine', 'hbs');
 
 const productsFaker = new ProductsFaker();
