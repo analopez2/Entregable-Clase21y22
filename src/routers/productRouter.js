@@ -4,7 +4,7 @@ import {
   prorductWasDeleted,
   invalidBody,
 } from '../consts/index.js';
-import { DbContainer } from '../Api/DbContainer.js';
+import { DbContainer } from '../contenedores/DbContainer.js';
 import { KnexService } from '../services/index.js';
 
 const productRouter = Router();
