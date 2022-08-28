@@ -1,4 +1,4 @@
-import MemoryContainer from '../Api/MemoryContainer.js';
+import MemoryContainer from '../contenedores/MemoryContainer.js';
 import { generateProducts } from '../utils/utils.js';
 
 class ProductsFaker extends MemoryContainer {

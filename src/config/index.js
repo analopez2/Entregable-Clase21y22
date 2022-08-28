@@ -1,4 +1,6 @@
+import dotenv from 'dotenv';
 const DEV_PORT = 8080;
+dotenv.config();
 
 const config = {
   knex: {
@@ -22,6 +24,8 @@ const config = {
   server: {
     PORT: process.env.PORT || DEV_PORT,
   },
+  selectedDB: process.env.TIPO_DB,
+  UrlMongoDB: process.env.URL,
 };
 
 export { config };
